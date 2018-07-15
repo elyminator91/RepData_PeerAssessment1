@@ -42,7 +42,8 @@ sum_data %>%
 ```r
 # Summary statistics for mean and median
 sum_data %>% 
-  summarise(mean = mean(total), median = median(total))
+  summarise(mean = mean(total, na.rm = TRUE), 
+            median = median(total, na.rm = TRUE))
 ```
 
 ```
