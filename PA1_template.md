@@ -7,14 +7,20 @@ output:
 
 
 ## Loading and preprocessing the data
-```{r, message=FALSE}
+
+```r
 raw_data <- readr::read_csv("activity.zip")
 dim(raw_data)
 ```
 
+```
+## [1] 17568     3
+```
+
 
 ## What is mean total number of steps taken per day?
-```{r, message=FALSE, fig.height=4, fig.width=5}
+
+```r
 library(dplyr)
 library(ggplot2)
 
@@ -29,15 +35,27 @@ sum_data %>%
   labs(x = "Number of Steps",
        y = "Number of Days",
        title = "Distribution of Total Steps per Day")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+```r
 # Summary statistics for mean and median
 sum_data %>% 
   summarise(mean = mean(total), median = median(total))
 ```
 
+```
+## # A tibble: 1 x 2
+##    mean median
+##   <dbl>  <int>
+## 1  9354  10395
+```
+
 
 ## What is the average daily activity pattern?
-```{r, message=FALSE, fig.height=4, fig.width=5}
+
+```r
 day_data <- raw_data %>%
   group_by(interval) %>%
   summarise(mean = mean(steps, na.rm = TRUE))
@@ -59,14 +77,24 @@ day_data %>%
        title = "Average Steps Taken per Time Interval")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
 
 ## Imputing missing values
 Values from the new data differ from the earlier estimates. The impact of imputing missing data increases the estimate for the mean, moving it closer to the median.
 
-```{r, message=FALSE, fig.height=4, fig.width=5}
+
+```r
 # Number of missing data
 table(!is.na(raw_data$steps))["FALSE"]
+```
 
+```
+## FALSE 
+##  2304
+```
+
+```r
 # Impute missing values using interval means
 new_data <- raw_data %>%
   group_by(interval) %>%
@@ -85,17 +113,29 @@ new_sum %>%
   labs(x = "Number of Steps",
        y = "Number of Days",
        title = "Distribution of Total Steps per Day (Updated)")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+```r
 # SUmmary statistics for mean and median
 new_sum %>% 
   summarise(mean = mean(total), median = median(total))
+```
+
+```
+## # A tibble: 1 x 2
+##    mean median
+##   <dbl>  <dbl>
+## 1 10766  10766
 ```
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 The average steps taken per time interval is more consitent and higher on a typical weekend than on a typical weekday. The maximum mean steps taken is higher and earlier for weekday (230 steps at 0835hr) than for weekend (167 steps at 0915hr).
 
-```{r, message=FALSE, fig.height=4, fig.width=5}
+
+```r
 # Create weekday indicator variable
 act_data <- new_data %>%
   mutate(weekday = ifelse(weekdays(date, TRUE) %in% c("Sat", "Sun"),
@@ -136,4 +176,6 @@ act_data %>%
        title = "Average Steps Taken per Time Interval") + 
   facet_grid(weekday ~ .)
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
